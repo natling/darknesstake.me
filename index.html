@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>darkness take me</title>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="favicon.png"/>
+  <style>
+    body {
+      margin: 0px;
+      width: 100vw;
+      height: 100vh;
+      box-sizing: border-box;
+      padding: 100px;
+      display: grid;
+      grid-template: repeat(2, 1fr) / repeat(4, 1fr);
+      grid-auto-flow: dense;
+      grid-gap: 20px;
+      background: black;
+      filter: blur(1px);
+      overflow: hidden;
+    }
+
+    .container {
+      position: relative;
+      overflow: scroll;
+    }
+
+    p {
+      position: absolute;
+      margin: 0px;
+      width: calc(100% - 3px);
+      text-align: justify;
+      font-family: 'Courier';
+      font-size: 16pt;
+      line-height: 0.8;
+      letter-spacing: -2px;
+      mix-blend-mode: color-dodge;
+      transition: transform 0.1s, color 0.1s;
+    }
+
+    @keyframes blink {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .cursor {
+      animation: blink 0.5s ease infinite alternate;
+    }
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+</body>
+
+<script src="book-of-job.js"></script>
+
+<script>
+  const settings = {
+    style : {
+      delay : {
+        min : 100,
+        max : 200,
+      },
+
+      jitter : {
+        x : 2,
+        y : 1,
+      },
+
+      color : {
+        state : false,
+        probability : 0.2,
+
+        delay : {
+          min :  200,
+          max : 2000,
+        },
+
+        night : {
+          r : {
+            min :   0,
+            max :  63,
+          },
+
+          g : {
+            min :  64,
+            max : 127,
+          },
+
+          b : {
+            min : 128,
+            max : 255,
+          },
+        },
+
+        twilight : {
+          r : {
+            min : 255,
+            max : 255,
+          },
+
+          g : {
+            min :   0,
+            max : 127,
+          },
+
+          b : {
+            min :   0,
+            max : 127,
+          },
+        },
+      },
+    },
+
+    speed : {
+      message : {
+        add    : 2000,
+        remove : 4000,
+      },
+
+      character : {
+        add : {
+          min : 16,
+          max : 32,
+        },
+
+        remove : {
+          min : 16,
+          max : 32,
+        },
+      },
+    },
+  };
+
+  const randomIntegerInclusive = (min, max) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  const randomIntegerInRange = range => randomIntegerInclusive(range.min, range.max)
+
+  const type = (message, layers) => {
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    container.className = 'container';
+
+    const speed = Object.assign({}, settings.speed.character);
+
+    for (const direction in speed) {
+      speed[direction] = randomIntegerInRange(speed[direction]);
+    }
+
+    for (let i = 0; i < layers; i++) {
+      const p = document.createElement('p');
+      container.appendChild(p);
+
+      const text = document.createElement('span');
+      p.appendChild(text);
+      text.className = 'text';
+
+      const cursor = document.createElement('span');
+      p.appendChild(cursor);
+      cursor.className = 'cursor';
+      cursor.innerHTML = '|';
+
+      const addMessage = () => {
+        const typed = text.innerHTML.length;
+
+        if (typed < message.length) {
+          text.innerHTML += message.slice(typed, typed + 1);
+          setTimeout(addMessage, speed.add);
+        } else {
+          setTimeout(removeMessage, settings.speed.message.remove);
+        }
+      }
+
+      const removeMessage = () => {
+        const typed = text.innerHTML.length;
+
+        if (typed > 0) {
+          text.innerHTML = text.innerHTML.slice(0, -1);
+          setTimeout(removeMessage, speed.remove);
+        } else {
+          setTimeout(addMessage, settings.speed.message.add);
+        }
+      }
+
+      const repeatMessage = () => {
+        const typed = text.innerHTML.length % (message.length + 1);
+        text.innerHTML += message.slice(typed, typed + 1) || ' ';
+        container.scrollTop = container.scrollHeight;
+        setTimeout(repeatMessage, speed.add);
+      }
+
+      const style = () => {
+        const [x, y] = [settings.style.jitter.x, settings.style.jitter.y].map(n => randomIntegerInclusive(-n, n));
+        p.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+
+        const color = Object.assign({}, settings.style.color[settings.style.color.state ? 'twilight' : 'night']);
+
+        for (const component in color) {
+          color[component] = randomIntegerInRange(color[component]);
+        }
+
+        const {r, g, b} = color;
+        p.style.color = 'rgb(' + [r, g, b].join(', ') + ')';
+
+        const delay = randomIntegerInRange(settings.style.delay);
+        setTimeout(style, delay);
+      }
+
+      setTimeout(repeatMessage, settings.speed.message.add);
+      style();
+    }
+  }
+
+  const setColor = () => {
+    settings.style.color.state = Math.random() < settings.style.color.probability;
+
+    const delay = randomIntegerInRange(settings.style.color.delay);
+    setTimeout(setColor, delay);
+  }
+
+  setColor();
+  corpus.slice(37, 45).forEach(verse => type(verse, 4));
+</script>
+
+</html>
