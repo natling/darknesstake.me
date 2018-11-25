@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>take me</title>
+  <title>darkness take me</title>
   <meta charset="UTF-8">
   <link rel="shortcut icon" href="favicon.png"/>
   <style>
@@ -37,6 +37,7 @@
       letter-spacing: -2px;
       mix-blend-mode: color-dodge;
       transition: transform 0.1s, color 0.1s;
+      overflow: hidden;
     }
 
     @keyframes blink {
@@ -220,14 +221,14 @@
     }
   }
 
-  const setColor = () => {
+  const setLight = () => {
     settings.style.color.state = Math.random() < settings.style.color.probability;
 
     const delay = randomIntegerInRange(settings.style.color.delay);
-    setTimeout(setColor, delay);
+    setTimeout(setLight, delay);
   }
 
-  setColor();
+  setLight();
   corpus.slice(37, 45).forEach(verse => type(verse, 4));
 </script>
 
