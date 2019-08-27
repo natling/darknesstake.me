@@ -151,11 +151,10 @@
     document.body.appendChild(container);
     container.className = 'container';
 
-    const speed = Object.assign({}, settings.speed.character);
-
-    for (const direction in speed) {
-      speed[direction] = randomIntegerInRange(speed[direction]);
-    }
+    const speed = Object.fromEntries(
+      Object.entries(settings.speed.character)
+      .map(([direction, range]) => [direction, randomIntegerInRange(range)])
+    );
 
     for (let i = 0; i < layers; i++) {
       const p = document.createElement('p');
@@ -201,19 +200,15 @@
 
       const style = () => {
         const [x, y] = [settings.style.jitter.x, settings.style.jitter.y].map(n => randomIntegerInclusive(-n, n));
-        p.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+        p.style.transform = `translate(${x}px, ${y}px)`;
 
-        const color = Object.assign({}, settings.style.color[settings.style.color.state ? 'twilight' : 'night']);
+        const {r, g, b} = Object.fromEntries(
+          Object.entries(settings.style.color[settings.style.color.state ? 'twilight' : 'night'])
+          .map(([component, range]) => [component, randomIntegerInRange(range)])
+        );
 
-        for (const component in color) {
-          color[component] = randomIntegerInRange(color[component]);
-        }
-
-        const {r, g, b} = color;
-        p.style.color = 'rgb(' + [r, g, b].join(', ') + ')';
-
-        const delay = randomIntegerInRange(settings.style.delay);
-        setTimeout(style, delay);
+        p.style.color = `rgb(${r}, ${g}, ${b})`;
+        setTimeout(style, randomIntegerInRange(settings.style.delay));
       }
 
       setTimeout(repeatMessage, settings.speed.message.add);
@@ -223,9 +218,7 @@
 
   const setLight = () => {
     settings.style.color.state = Math.random() < settings.style.color.probability;
-
-    const delay = randomIntegerInRange(settings.style.color.delay);
-    setTimeout(setLight, delay);
+    setTimeout(setLight, randomIntegerInRange(settings.style.color.delay));
   }
 
   setLight();
