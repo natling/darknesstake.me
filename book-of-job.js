@@ -1,4 +1,6 @@
-let corpus = `Bible, King James Version
+const corpus =
+
+`Bible, King James Version
 Job
 Job.1
 [1] There was a man in the land of Uz, whose name was Job; and that man was perfect and upright, and one that feared God, and eschewed evil.
@@ -1111,11 +1113,13 @@ Job.42
 [14] And he called the name of the first, Jemima; and the name of the second, Kezia; and the name of the third, Keren-happuch.
 [15] And in all the land were no women found so fair as the daughters of Job: and their father gave them inheritance among their brethren.
 [16] After this lived Job an hundred and forty years, and saw his sons, and his sons' sons, even four generations.
-[17] So Job died, being old and full of days.`;
+[17] So Job died, being old and full of days.`
 
-corpus = corpus.split('\n');
-corpus = corpus.filter(line => line.match(/\[[0-9]+\] /g));
-corpus = corpus.map(line => line.replace(/\[[0-9]+\] /g, ''));
-corpus = corpus.map(line => line.replace(/[.,\/#!?$%\^&\*;:{}=\_`"“”~()]/g, ''));
-corpus = corpus.map(line => line.trim());
-corpus = corpus.map(line => line.toLowerCase());
+.split('\n')
+.filter(line => line.match(/\[[0-9]+\] /g))
+.map(line => line
+	.replace(/\[[0-9]+\] /g, '')
+	.replace(/[.,\/#!?$%\^&\*;:{}=\_`"“”~()]/g, '')
+	.trim()
+	.toLowerCase()
+);
